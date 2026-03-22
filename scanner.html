@@ -1,0 +1,48 @@
+// GANTI DENGAN URL WEB APP ANDA DARI LANGKAH 2
+const SCRIPT_URL = "ISI_URL_WEB_APP_ANDA_DI_SINI";
+
+function saveStatus(status) {
+    // Tampilkan loading sederhana
+    const btnContainer = document.querySelector('.d-grid');
+    const originalContent = btnContainer.innerHTML;
+    btnContainer.innerHTML = `<div class="text-center"><div class="spinner-border text-light"></div><p>Mengirim ke pusat...</p></div>`;
+
+    const payload = {
+        nop: currentData.nop,
+        nama: currentData.nama,
+        tahun: currentData.tahun,
+        status: status
+    };
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        // Tampilkan notifikasi sukses
+        alert("Data berhasil tersimpan di Google Sheets!");
+        updateLocalLog(status); // Tambahkan ke riwayat di layar HP
+        resetScanner();
+        btnContainer.innerHTML = originalContent; // Kembalikan tombol
+    })
+    .catch(error => {
+        alert("Gagal mengirim data. Periksa koneksi internet.");
+        console.error('Error:', error);
+        btnContainer.innerHTML = originalContent;
+    });
+}
+
+function updateLocalLog(status) {
+    const time = new Date().toLocaleTimeString();
+    const logEntry = `
+        <div class="history-item">
+            <div class="d-flex justify-content-between">
+                <strong>${currentData.nama}</strong>
+                <span class="badge ${getStatusBadge(status)}">${status}</span>
+            </div>
+            <div class="small text-muted">${currentData.nop} | ${time}</div>
+        </div>
+    `;
+    const logContainer = document.getElementById('historyLog');
+    logContainer.innerHTML = logEntry + logContainer.innerHTML;
+}
